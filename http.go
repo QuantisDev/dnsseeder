@@ -21,8 +21,8 @@ func startHTTP(port string) {
 	http.HandleFunc("/statusNG", statusNGHandler)
 	http.HandleFunc("/summary", summaryHandler)
 	http.HandleFunc("/", emptyHandler)
-	// listen only on localhost
-	err := http.ListenAndServe("127.0.0.1:"+port, nil)
+	// listen only on 0.0.0.0 for easy ui viewing
+	err := http.ListenAndServe("0.0.0.0:"+port, nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
