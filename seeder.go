@@ -13,7 +13,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gcash/bchd/wire"
+	"github.com/akshaynexus/quand/wire"
 )
 
 const (

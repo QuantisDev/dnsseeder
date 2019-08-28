@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"errors"
-	"github.com/gcash/bchd/chaincfg"
-	"github.com/gcash/bchd/peer"
-	"github.com/gcash/bchd/wire"
+	"github.com/akshaynexus/quand/chaincfg"
+	"github.com/akshaynexus/quand/peer"
+	"github.com/akshaynexus/quand/wire"
 )
 
 type crawlError struct {

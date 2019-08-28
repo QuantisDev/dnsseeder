@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/gcash/bchd/wire"
+	"github.com/akshaynexus/quand/wire"
 	"net"
 	"strconv"
 	"testing"

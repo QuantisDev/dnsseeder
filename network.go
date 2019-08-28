@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gcash/bchd/wire"
+	"github.com/akshaynexus/quand/wire"
 	"log"
 	"os"
 	"path"
