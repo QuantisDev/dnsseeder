@@ -1,12 +1,11 @@
 {
   "Name": "Mainnet All",
-  "Desc": "Bitcoin Cash Mainnet - All",
-  "Id": "0xe8f3e1e3",
-  "Port": 8333,
-  "Pver": 70001,
-  "DNSName": "seed.bchd.cash",
+  "Desc": "Quantisnet Mainnet - All",
+  "Id": "0xd4babcf9",
+  "Port": 9801,
+  "Pver": 70214,
+  "DNSName": "quanseed.com",
   "TTL": 600,
-  "Seeder1": "seed.bitcoinabc.org",
-  "Seeder2": "seed-abc.bitcoinforks.org",
-  "Seeder3": "btccash-seeder.bitcoinunlimited.info"
+  "Seeder1": "quanseed.llama.band",
+  "Seeder2": "dnseed.quantisnetwork.org"
 }

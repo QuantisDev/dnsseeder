@@ -116,10 +116,11 @@ func initNetwork(jnw JNetwork) (*dnsseeder, error) {
 	seeder.initialIPs = jnw.InitialIPs
 
 	// load the seeder dns
-	seeder.seeders = make([]string, 3)
+	//Use only 2 as we dont have a 3rd seeder yet
+	seeder.seeders = make([]string, 2)
 	seeder.seeders[0] = jnw.Seeder1
 	seeder.seeders[1] = jnw.Seeder2
-	seeder.seeders[2] = jnw.Seeder3
+	// seeder.seeders[2] = jnw.Seeder3
 
 	// Parse service flags
 	var services []wire.ServiceFlag
