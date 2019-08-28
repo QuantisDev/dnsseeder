@@ -84,7 +84,7 @@ func crawlIP(s *dnsseeder, r *result) ([]*wire.NetAddress, *crawlError) {
 	// Wait for the verack message or timeout in case of failure.
 	select {
 	case <-verack:
-	case <-time.After(time.Second * 5):
+	case <-time.After(time.Second * 30):
 		return nil, &crawlError{"Verack timeout", errors.New("")}
 	}
 
