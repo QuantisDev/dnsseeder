@@ -7,5 +7,5 @@
   "DNSName": "quanseed.com",
   "TTL": 600,
   "Seeder1": "quanseed.llama.band",
-  "Seeder2": "dnseed.quantisnetwork.org"
+  "Seeder2": "dnsseed.quantisnetwork.org"
 }
