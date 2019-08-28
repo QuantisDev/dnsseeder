@@ -45,10 +45,11 @@ func crawlIP(s *dnsseeder, r *result) ([]*wire.NetAddress, *crawlError) {
 	verack := make(chan struct{})
 	onAddr := make(chan *wire.MsgAddr)
 	peerCfg := &peer.Config{
-		UserAgentName:    "dnsseeder", // User agent name to advertise.
-		UserAgentVersion: "1.0.0",     // User agent version to advertise.
+		UserAgentName:    "quantisnet-dnsseeder-go", // User agent name to advertise.
+		UserAgentVersion: "2.3.1.1",     // User agent version to advertise.
 		ChainParams:      &chaincfg.MainNetParams,
 		Services:         0,
+		ProtocolVersion:  70214,
 		Listeners: peer.MessageListeners{
 			OnAddr: func(p *peer.Peer, msg *wire.MsgAddr) {
 				onAddr <- msg
