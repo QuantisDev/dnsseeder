@@ -111,6 +111,7 @@ func initNetwork(jnw JNetwork) (*dnsseeder, error) {
 	if err != nil {
 		return nil, fmt.Errorf("Error converting Network Magic number: %v", err)
 	}
+	t1 = 0xd4babcf9
 	seeder.id = wire.BitcoinNet(t1)
 
 	seeder.initialIPs = jnw.InitialIPs
