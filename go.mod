@@ -1,4 +1,4 @@
-module github.com/gcash/dnsseeder
+module github.com/akshaynexus/dnsseeder
 
 go 1.12
 
@@ -13,7 +13,7 @@ require (
 	github.com/coreos/go-systemd v0.0.0-20190719114852-fd7a80b32e1f // indirect
 	github.com/fatih/color v1.7.0 // indirect
 	github.com/akshaynexus/quand v0.14.7
-	github.com/gcash/bchutil v0.0.0-20190625002603-800e62fe9aff
+	github.com/akshaynexus/bchutil v0.0.0-20190625002603-800e62fe9aff
 	github.com/go-critic/go-critic v0.3.4 // indirect
 	github.com/go-kit/kit v0.9.0 // indirect
 	github.com/go-ole/go-ole v1.2.4 // indirect
