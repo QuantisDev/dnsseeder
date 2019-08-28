@@ -39,7 +39,7 @@ func dnsWebHandler(w http.ResponseWriter, r *http.Request) {
 	s := getSeederByName(n)
 	if s == nil {
 		writeHeader(w, r)
-		fmt.Fprintf(w, "No seeder found: %s", html.EscapeString(n))
+		fmt.Fprintf(w, "<b>No seeder found: %s</b>", html.EscapeString(n))
 		writeFooter(w, r, st)
 		return
 	}
@@ -96,7 +96,7 @@ func dnsWebHandler(w http.ResponseWriter, r *http.Request) {
 
 	t1 := `
 	<center>
-	<table border=1>
+	<table class="table table-hover table-dark">
 	  <tr>
 	  <th>Standard Ports</th>
 	  <th>Non Standard Ports</th>
@@ -199,7 +199,7 @@ func statusHandler(w http.ResponseWriter, r *http.Request, status uint32) {
 	s := getSeederByName(n)
 	if s == nil {
 		writeHeader(w, r)
-		fmt.Fprintf(w, "No seeder found called %s", html.EscapeString(n))
+		fmt.Fprintf(w, "<b>No seeder found called %s</b>", html.EscapeString(n))
 		writeFooter(w, r, startT)
 		return
 	}
@@ -209,7 +209,7 @@ func statusHandler(w http.ResponseWriter, r *http.Request, status uint32) {
 
 	st := `
 	<center>
-	<table border=1>
+	<table class="table table-hover table-dark">
 	  <tr>
 	  <th>Node</th>
 	  <th>Summary</th>
@@ -231,7 +231,7 @@ func statusHandler(w http.ResponseWriter, r *http.Request, status uint32) {
 	writeHeader(w, r)
 
 	if len(ws) == 0 {
-		fmt.Fprintf(w, "No Nodes found with this status")
+		fmt.Fprintf(w, "<b>No Nodes found with this status</b>")
 	} else {
 
 		switch status {
@@ -340,7 +340,7 @@ func nodeHandler(w http.ResponseWriter, r *http.Request) {
 
 	ndt := `
     <center>
-    <table border=1>
+    <table class="table table-hover table-dark">
       <tr>
       <th>Node {{.Key}}</th><th>Details</th>
       </tr>
@@ -366,7 +366,7 @@ func nodeHandler(w http.ResponseWriter, r *http.Request) {
 	s := getSeederByName(n)
 	if s == nil {
 		writeHeader(w, r)
-		fmt.Fprintf(w, "No seeder found called %s", html.EscapeString(n))
+		fmt.Fprintf(w, "<b>No seeder found called %s</b>", html.EscapeString(n))
 		writeFooter(w, r, st)
 		return
 	}
@@ -377,7 +377,7 @@ func nodeHandler(w http.ResponseWriter, r *http.Request) {
 	k := r.FormValue("nd")
 	writeHeader(w, r)
 	if _, ok := s.theList[k]; !ok {
-		fmt.Fprintf(w, "Sorry there is no Node with those details\n")
+		fmt.Fprintf(w, "<b>Sorry there is no Node with those details</b>\n")
 	} else {
 
 		nd := s.theList[k]
@@ -469,18 +469,18 @@ func summaryHandler(w http.ResponseWriter, r *http.Request) {
 		sp := `
     <b>Stats for seeder: {{.Name}}</b>
     <center>
-    <table><tr><td>
+    <table class="table-dark"><tr><td>
     Node Stats (count/started)<br>
-    <table border=1><tr>
+    <table class="table table-hover table-dark"><tr>
 	<td><a href="/statusRG?s={{.Name}}">RG: {{.RG}}/{{.RGS}}</a></td>
     <td><a href="/statusCG?s={{.Name}}">CG: {{.CG}}/{{.CGS}}</a></td>
     <td><a href="/statusWG?s={{.Name}}">WG: {{.WG}}/{{.WGS}}</a></td>
     <td><a href="/statusNG?s={{.Name}}">NG: {{.NG}}/{{.NGS}}</a></td>
     <td>Total: {{.Total}}</td>
-    </tr></table>
+	</tr></table>
     </td><td>
     DNS Requests<br>
-    <table border=1><tr>
+    <table class="table table-hover table-dark"><tr>
 	<td>V4 Std: {{.V4Std}}</td>
     <td>V4 Non: {{.V4Non}}</td>
     <td>V6 Std: {{.V6Std}}</td>
@@ -509,9 +509,38 @@ func writeHeader(w http.ResponseWriter, r *http.Request) {
 	// we are using basic and simple html here. No fancy graphics or css
 	h1 := `
     <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-    <html><head><title>dnsseeder</title></head><body>
+	<html><head><title>Quantis Go Seeder</title><link rel="stylesheet" href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css" integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous">
+	<style>
+	body {
+		background-color: #1e1e1e;
+		body: white;
+	}
+	b{
+		color: white;
+	}
+	</style>
+	</head><body>
 	<center>
-	<a href="/summary">Summary</a>   
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js" integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js" integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9" crossorigin="anonymous"></script>
+<script>$(document).ready(function() { $('body').bootstrapMaterialDesign(); });</script>
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #388E3C;">
+  <a class="navbar-brand" href="#">Quantis SeederX</a>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="/summary">Summary <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/dns?s=Mainnet All">DNS</a>
+	  </li>
+	  <li class="nav-item">
+	  <a class="nav-link" href="/statusCG?s=Mainnet All">CGNodes</a>
+	</li>
+    </ul>
+  </div>
+</nav> 
 `
 	fmt.Fprintf(w, h1)
 
@@ -539,9 +568,9 @@ func writeFooter(w http.ResponseWriter, r *http.Request, st time.Time) {
 	f := `
 	<hr>
 	<center>
-	<b>Version:</b> {{.Version}}
-	<b>Uptime:</b> {{.Uptime}}
-	<b>Request Time:</b> {{.Rt}}
+	<b>Version:{{.Version}}</b>
+	<b>Uptime:{{.Uptime}}</b> 
+	<b>Request Time:{{.Rt}}</b> 
 	</center>
 	</body></html>
 	`
