@@ -1,11 +1,11 @@
 dnsseeder
 =========
-[![Build Status](https://travis-ci.org/gcash/dnsseeder.png?branch=master)](https://travis-ci.org/gcash/dnsseeder)
-[![Go Report Card](https://goreportcard.com/badge/github.com/gcash/dnsseeder)](https://goreportcard.com/report/github.com/gcash/dnsseeder)
+[![Build Status](https://travis-ci.org/akshaynexus/dnsseeder.png?branch=master)](https://travis-ci.org/gcash/dnsseeder)
+[![Go Report Card](https://goreportcard.com/badge/github.com/akshaynexus/dnsseeder)](https://goreportcard.com/report/github.com/akshaynexus/dnsseeder)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg)](http://godoc.org/github.com/gcash/dnsseeder)
 
-A Bitcoin Cash network crawler and DNS seeder written in Go.
+A Quantis network crawler and DNS seeder written in Go.
 
 Originally forked from https://github.com/gombadi/dnsseederd
 
@@ -23,7 +23,7 @@ Originally forked from https://github.com/gombadi/dnsseederd
 
 Simply use go get to download the code:
 
-    $ go get github.com/gcash/dnsseeder
+    $ go get github.com/akshaynexus/dnsseeder
 
 ## Usage
 
