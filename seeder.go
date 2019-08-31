@@ -575,7 +575,7 @@ func (s *dnsseeder) auditNodes() {
 			delete(s.theList, k)
 		}
 		// Audit BlockHeight of node,if lower than current block num from blockbook,remove it,add buffer of 2 blocks offet so that delays are accounted for
-		if nd.LastBlock < requiredBlocks && nd.LastBlock + 4 < requiredBlocks {
+		if nd.LastBlock < requiredBlocks && nd.LastBlock + 10 < requiredBlocks {
 			if config.verbose {
 				log.Printf("%s: purging node %s after %v blocks diff from required blocks,lastheight for node %v\n", s.name, k, requiredBlocks - nd.LastBlock,nd.LastBlock)
 			}
