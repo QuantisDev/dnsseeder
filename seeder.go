@@ -83,7 +83,36 @@ type result struct {
 	lastBlock  int32              // last block seen by the node
 	strVersion string             // remote client user agent
 }
-
+type BlockBookResponse struct {
+	Blockbook struct {
+		Coin            string    `json:"coin"`
+		Host            string    `json:"host"`
+		Version         string    `json:"version"`
+		GitCommit       string    `json:"gitCommit"`
+		BuildTime       time.Time `json:"buildTime"`
+		SyncMode        bool      `json:"syncMode"`
+		InitialSync     bool      `json:"initialSync"`
+		InSync          bool      `json:"inSync"`
+		BestHeight      int       `json:"bestHeight"`
+		LastBlockTime   time.Time `json:"lastBlockTime"`
+		InSyncMempool   bool      `json:"inSyncMempool"`
+		LastMempoolTime time.Time `json:"lastMempoolTime"`
+		MempoolSize     int       `json:"mempoolSize"`
+		Decimals        int       `json:"decimals"`
+		DbSize          int64     `json:"dbSize"`
+		About           string    `json:"about"`
+	} `json:"blockbook"`
+	Backend struct {
+		Chain           string `json:"chain"`
+		Blocks          int    `json:"blocks"`
+		Headers         int    `json:"headers"`
+		BestBlockHash   string `json:"bestBlockHash"`
+		Difficulty      string `json:"difficulty"`
+		Version         string `json:"version"`
+		Subversion      string `json:"subversion"`
+		ProtocolVersion string `json:"protocolVersion"`
+	} `json:"backend"`
+}
 // initCrawlers needs to be run before the startCrawlers so it can get
 // a list of current ip addresses from the other seeders and therefore
 // start the crawl process
@@ -479,10 +508,29 @@ func crc16(bs []byte) uint16 {
 	return crc
 }
 
+func getRequiredBlockNum() int {
+	//Get API data from blockbook and extract blockcount from the json data
+    response, _, err := http.Get("https://blockbook.quantisnetwork.org/api/")
+    if err != nil {
+        fmt.Printf("%s", err)
+        os.Exit(1)
+    } else {
+        defer response.Body.Close()
+        contents, err := ioutil.ReadAll(response.Body)
+        if err != nil {
+            fmt.Printf("%s", err)
+            os.Exit(1)
+		}
+		var blockbookresponse BlockBookResponse	
+        json.Unmarshal([]byte(contents), &blockbookresponse)
+		return blockbookresponse.Backend.Blocks
+    }
+}
 func (s *dnsseeder) auditNodes() {
 
 	c := 0
-
+	//Get minnimum block number from blockbook explorer API
+    requiredBlocks := int32(getRequiredBlockNum())
 	// set this early so for this audit run all NG clients will be purged
 	// and space will be made for new, possible CG clients
 	iAmFull := len(s.theList) > s.maxSize
@@ -515,6 +563,18 @@ func (s *dnsseeder) auditNodes() {
 		if nd.Status == statusNG && nd.ConnectFails > maxFails {
 			if config.verbose {
 				log.Printf("%s: purging node %s after %v failed connections\n", s.name, k, nd.ConnectFails)
+			}
+
+			c++
+			// remove the map entry and mark the old node as
+			// nil so garbage collector will remove it
+			s.theList[k] = nil
+			delete(s.theList, k)
+		}
+		// Audit BlockHeight of node,if lower than current block num from blockbook,remove it
+		if nd.LastBlock < requiredBlocks {
+			if config.verbose {
+				log.Printf("%s: purging node %s after %v blocks diff from required blocks\n", s.name, k, requiredBlocks - nd.LastBlock)
 			}
 
 			c++
