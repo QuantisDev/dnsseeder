@@ -12,6 +12,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"net/http"
 
 	"github.com/akshaynexus/quand/wire"
 )
@@ -24,12 +25,12 @@ const (
 	minPort = 0
 	maxPort = 65535
 
-	crawlDelay     = 22 // seconds between start crawlwer ticks
-	auditDelay     = 22 // minutes between audit channel ticks
-	dnsDelay       = 57 // seconds between updates to active dns record list
+	crawlDelay     = 10 // seconds between start crawlwer ticks
+	auditDelay     = 10 // minutes between audit channel ticks
+	dnsDelay       = 15 // seconds between updates to active dns record list
 	cacheDumpDelay = 10 // minutes between writing cache to disk
 
-	maxFails = 58 // max number of connect fails before we delete a node. Just over 24 hours(checked every 33 minutes)
+	maxFails = 15 // max number of connect fails before we delete a node. Just over 24 hours(checked every 33 minutes)
 
 	maxTo = 250 // max seconds (4min 10 sec) for all comms to node to complete before we timeout
 )
@@ -83,7 +84,36 @@ type result struct {
 	lastBlock  int32              // last block seen by the node
 	strVersion string             // remote client user agent
 }
-
+type BlockBookResponse struct {
+	Blockbook struct {
+		Coin            string    `json:"coin"`
+		Host            string    `json:"host"`
+		Version         string    `json:"version"`
+		GitCommit       string    `json:"gitCommit"`
+		BuildTime       time.Time `json:"buildTime"`
+		SyncMode        bool      `json:"syncMode"`
+		InitialSync     bool      `json:"initialSync"`
+		InSync          bool      `json:"inSync"`
+		BestHeight      int       `json:"bestHeight"`
+		LastBlockTime   time.Time `json:"lastBlockTime"`
+		InSyncMempool   bool      `json:"inSyncMempool"`
+		LastMempoolTime time.Time `json:"lastMempoolTime"`
+		MempoolSize     int       `json:"mempoolSize"`
+		Decimals        int       `json:"decimals"`
+		DbSize          int64     `json:"dbSize"`
+		About           string    `json:"about"`
+	} `json:"blockbook"`
+	Backend struct {
+		Chain           string `json:"chain"`
+		Blocks          int    `json:"blocks"`
+		Headers         int    `json:"headers"`
+		BestBlockHash   string `json:"bestBlockHash"`
+		Difficulty      string `json:"difficulty"`
+		Version         string `json:"version"`
+		Subversion      string `json:"subversion"`
+		ProtocolVersion string `json:"protocolVersion"`
+	} `json:"backend"`
+}
 // initCrawlers needs to be run before the startCrawlers so it can get
 // a list of current ip addresses from the other seeders and therefore
 // start the crawl process
@@ -479,10 +509,31 @@ func crc16(bs []byte) uint16 {
 	return crc
 }
 
+func getRequiredBlockNum() int {
+	//Get API data from blockbook and extract blockcount from the json data
+    response, err := http.Get("https://blockbook.quantisnetwork.org/api/")
+    if err != nil {
+        fmt.Printf("%s", err)
+        os.Exit(1)
+    } else {
+        defer response.Body.Close()
+        contents, err := ioutil.ReadAll(response.Body)
+        if err != nil {
+            fmt.Printf("%s", err)
+            os.Exit(1)
+		}
+		var blockbookresponse BlockBookResponse	
+        json.Unmarshal([]byte(contents), &blockbookresponse)
+		return blockbookresponse.Backend.Blocks
+	}
+	//if no val is returned,use the last known blockheight
+	return 89654
+}
 func (s *dnsseeder) auditNodes() {
 
 	c := 0
-
+	//Get minnimum block number from blockbook explorer API
+    requiredBlocks := int32(getRequiredBlockNum())
 	// set this early so for this audit run all NG clients will be purged
 	// and space will be made for new, possible CG clients
 	iAmFull := len(s.theList) > s.maxSize
@@ -539,6 +590,18 @@ func (s *dnsseeder) auditNodes() {
 
 		// check if we need to purge statusCG to freshen the list
 		if nd.Status == statusCG {
+					// Audit BlockHeight of node,if lower than current block num from blockbook,remove it,add buffer of 2 blocks offet so that delays are accounted for
+		if nd.LastBlock < requiredBlocks && nd.LastBlock + 10 < requiredBlocks {
+			if config.verbose {
+				log.Printf("%s: purging node %s ,reason: %v blocks diff from reqBlocks,lastheight for node: %v\n", s.name, k, requiredBlocks - nd.LastBlock,nd.LastBlock)
+			}
+            nd.Status = statusNG 
+			c++
+			// remove the map entry and mark the old node as
+			// nil so garbage collector will remove it
+			s.theList[k] = nil
+			delete(s.theList, k)
+		}
 			if cgCount++; cgCount > cgGoal {
 				// we have enough statusCG clients so purge remaining to cycle through the list
 				if config.verbose {

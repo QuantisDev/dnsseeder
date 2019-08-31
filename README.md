@@ -7,6 +7,8 @@ dnsseeder
 
 A Quantis network crawler and DNS seeder written in Go.
 
+Preview at http://quanseed.com/summary
+
 Originally forked from https://github.com/gombadi/dnsseederd
 
 ## Features
