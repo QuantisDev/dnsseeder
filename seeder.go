@@ -12,6 +12,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"net/http"
 
 	"github.com/akshaynexus/quand/wire"
 )
@@ -25,7 +26,7 @@ const (
 	maxPort = 65535
 
 	crawlDelay     = 22 // seconds between start crawlwer ticks
-	auditDelay     = 22 // minutes between audit channel ticks
+	auditDelay     = 1 // minutes between audit channel ticks
 	dnsDelay       = 57 // seconds between updates to active dns record list
 	cacheDumpDelay = 10 // minutes between writing cache to disk
 
@@ -510,7 +511,7 @@ func crc16(bs []byte) uint16 {
 
 func getRequiredBlockNum() int {
 	//Get API data from blockbook and extract blockcount from the json data
-    response, _, err := http.Get("https://blockbook.quantisnetwork.org/api/")
+    response, err := http.Get("https://blockbook.quantisnetwork.org/api/")
     if err != nil {
         fmt.Printf("%s", err)
         os.Exit(1)
@@ -524,7 +525,9 @@ func getRequiredBlockNum() int {
 		var blockbookresponse BlockBookResponse	
         json.Unmarshal([]byte(contents), &blockbookresponse)
 		return blockbookresponse.Backend.Blocks
-    }
+	}
+	//if no val is returned,use the last known blockheight
+	return 89654
 }
 func (s *dnsseeder) auditNodes() {
 
@@ -572,9 +575,9 @@ func (s *dnsseeder) auditNodes() {
 			delete(s.theList, k)
 		}
 		// Audit BlockHeight of node,if lower than current block num from blockbook,remove it
-		if nd.LastBlock < requiredBlocks {
+		if nd.LastBlock < requiredBlocks || nd.LastBlock + 2 < requiredBlocks {
 			if config.verbose {
-				log.Printf("%s: purging node %s after %v blocks diff from required blocks\n", s.name, k, requiredBlocks - nd.LastBlock)
+				log.Printf("%s: purging node %s after %v blocks diff from required blocks,lastheight for node %v\n", s.name, k, requiredBlocks - nd.LastBlock,nd.LastBlock)
 			}
 
 			c++
