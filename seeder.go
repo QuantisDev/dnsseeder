@@ -25,9 +25,9 @@ const (
 	minPort = 0
 	maxPort = 65535
 
-	crawlDelay     = 22 // seconds between start crawlwer ticks
+	crawlDelay     = 10 // seconds between start crawlwer ticks
 	auditDelay     = 1 // minutes between audit channel ticks
-	dnsDelay       = 57 // seconds between updates to active dns record list
+	dnsDelay       = 15 // seconds between updates to active dns record list
 	cacheDumpDelay = 10 // minutes between writing cache to disk
 
 	maxFails = 58 // max number of connect fails before we delete a node. Just over 24 hours(checked every 33 minutes)
@@ -574,18 +574,6 @@ func (s *dnsseeder) auditNodes() {
 			s.theList[k] = nil
 			delete(s.theList, k)
 		}
-		// Audit BlockHeight of node,if lower than current block num from blockbook,remove it,add buffer of 2 blocks offet so that delays are accounted for
-		if nd.LastBlock < requiredBlocks && nd.LastBlock + 10 < requiredBlocks {
-			if config.verbose {
-				log.Printf("%s: purging node %s after %v blocks diff from required blocks,lastheight for node %v\n", s.name, k, requiredBlocks - nd.LastBlock,nd.LastBlock)
-			}
-
-			c++
-			// remove the map entry and mark the old node as
-			// nil so garbage collector will remove it
-			s.theList[k] = nil
-			delete(s.theList, k)
-		}
 
 		// If seeder is full then remove old NG clients and fill up with possible new CG clients
 		if nd.Status == statusNG && iAmFull {
@@ -602,6 +590,18 @@ func (s *dnsseeder) auditNodes() {
 
 		// check if we need to purge statusCG to freshen the list
 		if nd.Status == statusCG {
+					// Audit BlockHeight of node,if lower than current block num from blockbook,remove it,add buffer of 2 blocks offet so that delays are accounted for
+		if nd.LastBlock < requiredBlocks && nd.LastBlock + 10 < requiredBlocks {
+			if config.verbose {
+				log.Printf("%s: purging node %s ,reason: %v blocks diff from reqBlocks,lastheight for node: %v\n", s.name, k, requiredBlocks - nd.LastBlock,nd.LastBlock)
+			}
+            nd.Status = statusNG 
+			c++
+			// remove the map entry and mark the old node as
+			// nil so garbage collector will remove it
+			s.theList[k] = nil
+			delete(s.theList, k)
+		}
 			if cgCount++; cgCount > cgGoal {
 				// we have enough statusCG clients so purge remaining to cycle through the list
 				if config.verbose {

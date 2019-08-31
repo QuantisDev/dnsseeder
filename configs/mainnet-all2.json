@@ -1,0 +1,11 @@
+{
+    "Name": "Mainnet All",
+    "Desc": "Quantisnet Mainnet - All",
+    "Id": "0xd4babcf9",
+    "Port": 9801,
+    "Pver": 70214,
+    "DNSName": "quanseed.llama.band",
+    "TTL": 3600,
+    "Seeder1": "dnsseed.quantisnetwork.org",
+    "Seeder2": "quanseed.com"
+  }
