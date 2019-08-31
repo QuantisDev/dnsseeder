@@ -26,11 +26,11 @@ const (
 	maxPort = 65535
 
 	crawlDelay     = 10 // seconds between start crawlwer ticks
-	auditDelay     = 1 // minutes between audit channel ticks
+	auditDelay     = 10 // minutes between audit channel ticks
 	dnsDelay       = 15 // seconds between updates to active dns record list
 	cacheDumpDelay = 10 // minutes between writing cache to disk
 
-	maxFails = 58 // max number of connect fails before we delete a node. Just over 24 hours(checked every 33 minutes)
+	maxFails = 15 // max number of connect fails before we delete a node. Just over 24 hours(checked every 33 minutes)
 
 	maxTo = 250 // max seconds (4min 10 sec) for all comms to node to complete before we timeout
 )
